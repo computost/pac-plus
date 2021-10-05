@@ -1,0 +1,15 @@
+{
+  "name": "pac-plus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "pac-wrap"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pac-wrap": "0.0.10"
+  }
+}
