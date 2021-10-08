@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Command, program } from "commander";
 import { pac } from "pac-wrap";
 import { exit } from "process";
