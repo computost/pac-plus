@@ -1,16 +1,19 @@
+# pac-plus
+
+An opinionated collection of ALM-related tasks for Power Platform.
+
 ```
     pac-plus
        |
    +---+-----+
    |         |
    v         v
-pac-wrap   pp-api
+pac-wrap   dataverse-api
    |
    v
 pac-fetch
 ```
 
-- `pac-plus` - Opinionated library that uses pac-wrap
-- `pac-wrap` - Unopinionated wrapper on Power Platform CLI
-- `pp-api` - Power Platform API Library
-- `pac-fetch` - Download Power Platform CLI
+- [`pac-wrap`](https://github.com/melody-universe/pac-wrap) - Unopinionated wrapper on Power Platform CLI
+- `dataverse-api` - Dataverse API Library (Coming soon)
+- [`pac-fetch`](https://github.com/melody-universe/pac-fetch) - Download Power Platform CLI
