@@ -1,6 +1,6 @@
 {
   "name": "pac-plus",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An opinionated collection of ALM-related tasks for Power Platform.",
   "main": "dist/index.js",
   "type": "module",
