@@ -9,7 +9,8 @@
     "build": "tsc",
     "prestart": "npm run set-version",
     "start": "node --loader ts-node/esm src/cli.ts",
-    "set-version": "node --loader ts-node/esm setVersion.ts"
+    "set-version": "node --loader ts-node/esm setVersion.ts",
+    "test": "node --loader ts-node/esm src/test.ts"
   },
   "bin": {
     "pac-plus": "dist/cli.js"
@@ -28,8 +29,8 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^8.2.0",
-    "dataverse-api": "0.0.5",
-    "pac-wrap": "0.0.26"
+    "dataverse-api": "0.0.7",
+    "pac-wrap": "0.0.30"
   },
   "devDependencies": {
     "@types/node": "^16.10.3",
