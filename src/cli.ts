@@ -10,6 +10,7 @@ program.version(version);
 program
   .command("pac")
   .description("Run the Power Platform CLI")
+  .allowUnknownOption()
   .action((_, command: Command) => {
     pac(command.args).catch(exit);
   });
