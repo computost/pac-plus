@@ -15,5 +15,5 @@ pac-fetch
 ```
 
 - [`pac-wrap`](https://github.com/melody-universe/pac-wrap) - Unopinionated wrapper on Power Platform CLI
-- `dataverse-api` - Dataverse API Library (Coming soon)
+- [`dataverse-api`](https://github.com/microsoft/dataverse-api) - Dataverse API Library (Coming soon)
 - [`pac-fetch`](https://github.com/melody-universe/pac-fetch) - Download Power Platform CLI

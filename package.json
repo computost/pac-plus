@@ -28,6 +28,7 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^8.2.0",
+    "dataverse-api": "0.0.5",
     "pac-wrap": "0.0.26"
   },
   "devDependencies": {
