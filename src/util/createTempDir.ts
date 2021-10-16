@@ -1,6 +1,8 @@
-import { mkdir } from "fs/promises";
+import { mkdir, rm } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import { addCleanupAction } from "./cleanup.js";
+import { generateRandomString } from "./generateRandomString";
 
 export async function createTempDir() {
   const container = getTempContainer();
@@ -8,14 +10,8 @@ export async function createTempDir() {
   const hash = generateRandomString();
   const tempDir = join(container, `${timeStamp}-${hash}`);
   await mkdir(tempDir, { recursive: true });
+  addCleanupAction(() => rm(tempDir, { recursive: true }));
   return tempDir;
-}
-
-export const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-function generateRandomString() {
-  return [...Array(10)]
-    .map(() => characters.charAt(Math.random() * characters.length))
-    .join("");
 }
 
 function getTempContainer() {

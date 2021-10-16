@@ -1,8 +1,10 @@
-import { exportUnpackSolution } from "./commands/export-unpack-solution.js";
+import { commitSolution } from "./commands/solution/commit.js";
 import { config } from "dotenv";
 import { cwd, env } from "process";
 import { join } from "path";
+import { disableTelemetry } from "./util/disableTelemetry.js";
 
+/*
 config();
 
 (async () => {
@@ -17,3 +19,4 @@ config();
     url: env.URL,
   });
 })();
+*/

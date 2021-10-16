@@ -29,8 +29,9 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^8.2.0",
-    "dataverse-api": "0.0.7",
-    "pac-wrap": "0.0.30"
+    "dataverse-api": "0.0.17",
+    "odata-query": "^6.7.1",
+    "pac-wrap": "0.0.31"
   },
   "devDependencies": {
     "@types/node": "^16.10.3",

@@ -2,7 +2,7 @@
 import { Command, program } from "commander";
 import { pac } from "pac-wrap";
 import { exit } from "process";
-import { exportUnpackSolution } from "./commands/export-unpack-solution.js";
+import { commitSolution } from "./commands/solution/commit.js";
 import version from "./version.js";
 
 program.version(version);
@@ -16,11 +16,15 @@ program
   });
 
 program
-  .command("export-unpack-solution")
-  .description("Export and unpack a solution")
+  .command("commit-solution")
+  .description("Exports, unpacks, and commits a solution to source control.")
   .requiredOption(
     "-n, --name <name>",
     "Name of the solution to export and unpack."
+  )
+  .option(
+    "-m, --message <message>",
+    'Commit message to use when committing the solution. Defaults to "Automated commit".'
   )
   .option(
     "-f, --folder <folder>",
@@ -50,6 +54,6 @@ program
     "The cloud instance to authenticate with." +
       "Values: Public, Tip1, Tip2, UsGov, UsGovHigh, UsGovDod"
   )
-  .action((options) => exportUnpackSolution(options).catch(console.error));
+  .action((options) => commitSolution(options).catch(console.error));
 
 program.parse();
