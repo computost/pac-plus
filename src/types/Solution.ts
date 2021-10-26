@@ -1,4 +1,5 @@
-export interface Solution {
+export type Solution = Partial<{
+  solutionid: string;
   uniquename: string;
   version: string;
-}
+}>;

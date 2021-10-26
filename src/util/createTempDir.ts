@@ -2,7 +2,7 @@ import { mkdir, rm } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { addCleanupAction } from "./cleanup.js";
-import { generateRandomString } from "./generateRandomString";
+import { generateRandomString } from "./generateRandomString.js";
 
 export async function createTempDir() {
   const container = getTempContainer();
@@ -21,7 +21,7 @@ function getTempContainer() {
 }
 
 function getPackagePath() {
-  return join(getDirName(), "..");
+  return join(getDirName(), "..", "..");
 }
 
 function getDirName() {

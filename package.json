@@ -29,12 +29,14 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^8.2.0",
-    "dataverse-api": "0.0.17",
+    "execa": "^5.1.1",
     "odata-query": "^6.7.1",
-    "pac-wrap": "0.0.31"
+    "pac-wrap": "0.0.31",
+    "xrm-webapi-node": "0.0.1"
   },
   "devDependencies": {
     "@types/node": "^16.10.3",
+    "@types/xml2js": "^0.4.9",
     "dotenv": "^10.0.0",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"

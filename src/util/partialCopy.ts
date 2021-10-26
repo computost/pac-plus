@@ -1,7 +1,7 @@
 export function partialCopy<TObject extends Object, TKey extends keyof TObject>(
   object: TObject,
   keys: TKey[]
-): TObject {
+): { [key in TKey]: TObject[key] } {
   return keys.reduce(
     (returnValue, key) => ({
       ...returnValue,

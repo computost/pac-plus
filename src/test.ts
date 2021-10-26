@@ -3,20 +3,31 @@ import { config } from "dotenv";
 import { cwd, env } from "process";
 import { join } from "path";
 import { disableTelemetry } from "./util/disableTelemetry.js";
+import { bumpSolutionVersion } from "./commands/solution/bumpVersion.js";
 
-/*
 config();
 
 (async () => {
   const solutionName = env.SOLUTION_NAME!;
-  await exportUnpackSolution({
-    name: solutionName,
-    folder: join(cwd(), "temp", solutionName),
+  /*await commitSolution({
+    message: "sample commit message",
 
-    applicationId: env.APPLICATION_ID,
-    clientSecret: env.CLIENT_SECRET,
-    tenantId: env.TENANT_ID,
-    url: env.URL,
+    folder: join(cwd(), "temp", solutionName),
+    name: solutionName,
+
+    applicationId: env.APPLICATION_ID!,
+    clientSecret: env.CLIENT_SECRET!,
+    tenantId: env.TENANT_ID!,
+    url: env.URL!,
+  });*/
+  await bumpSolutionVersion({
+    action: "revision",
+    folder: join(cwd(), "temp", solutionName),
+    name: solutionName,
+
+    applicationId: env.APPLICATION_ID!,
+    clientSecret: env.CLIENT_SECRET!,
+    tenantId: env.TENANT_ID!,
+    url: env.URL!,
   });
 })();
-*/

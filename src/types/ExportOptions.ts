@@ -4,5 +4,5 @@ import { AuthenticateOptions } from "./CreateAuthOptions.js";
 
 export type ExportOptions = AuthenticateOptions &
   Optional<Omit<Parameters<typeof exportSolution>[0], "managed">, "path"> & {
-    packageType: PackageType;
+    packageType?: PackageType;
   };

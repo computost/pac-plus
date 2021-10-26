@@ -6,7 +6,9 @@ import { createTempDir } from "../../util/createTempDir.js";
 import { partialCopy } from "../../util/partialCopy.js";
 import { authenticate } from "../auth/create.js";
 
-export async function exportSolution(options: ExportOptions) {
+export async function exportSolution(
+  options: ExportOptions
+): Promise<ExportOptions & { zipFile: string }> {
   const exportOptions: ExportOptions = partialCopy(options, [
     "name",
     "async",
@@ -14,7 +16,7 @@ export async function exportSolution(options: ExportOptions) {
     "maxAsyncWaitTime",
     "targetVersion",
   ]);
-  const { packageType } = options;
+  const packageType = options.packageType ?? "Both";
   const [path] = await Promise.all([
     options.path ?? createTempPath(exportOptions),
     authenticate(options),
@@ -42,7 +44,7 @@ export async function exportSolution(options: ExportOptions) {
 
   await Promise.all(exportPromises);
 
-  return path;
+  return { ...options, zipFile: path };
 }
 
 async function createTempPath(options: ExportOptions): Promise<string> {
