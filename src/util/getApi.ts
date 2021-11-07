@@ -2,9 +2,9 @@ import {
   getFetch as externalGetFetch,
   getWebApi as externalGetWebApi,
 } from "xrm-webapi-node";
-import { ClientCredentials } from "xrm-webapi-node/dist/types/ClientCredentials";
-import { Fetch } from "xrm-webapi-node/dist/types/methods/Fetch";
-import { WebApi } from "xrm-webapi-node/dist/types/WebApi";
+import { Credentials } from "xrm-webapi-node/dist/types/Credentials.js";
+import { Fetch } from "xrm-webapi-node/dist/types/methods/Fetch.js";
+import { WebApi } from "xrm-webapi-node/dist/types/WebApi.js";
 
 const apiMap: Map<Key, Value> = new Map();
 
@@ -21,5 +21,5 @@ export function getApi(...args: Key): Value {
   }
 }
 
-type Key = [url: string, credentials: ClientCredentials];
+type Key = [url: string, credentials: Credentials];
 type Value = { fetch: Fetch; webApi: WebApi };

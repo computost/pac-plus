@@ -1,8 +1,11 @@
 import { CommitOptions } from "../../types/CommitOptions.js";
 import { git } from "../../util/git.js";
 
-export async function commitSolution(options: CommitOptions) {
-  const { author, folder, message } = options;
+export async function commitSolution<
+  TOptions extends CommitOptions = CommitOptions
+>(options: TOptions): Promise<TOptions> {
+  const { author, folder } = options;
+  const message = options.message ?? "Automated commit";
   await git("add", folder);
   await git(
     "commit",
@@ -10,4 +13,5 @@ export async function commitSolution(options: CommitOptions) {
     message,
     ...(author ? ["--author", author] : [])
   );
+  return options;
 }

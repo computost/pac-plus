@@ -32,7 +32,7 @@
     "execa": "^5.1.1",
     "odata-query": "^6.7.1",
     "pac-wrap": "0.0.31",
-    "xrm-webapi-node": "0.0.1"
+    "xrm-webapi-node": "0.0.2"
   },
   "devDependencies": {
     "@types/node": "^16.10.3",

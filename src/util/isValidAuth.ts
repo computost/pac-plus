@@ -1,4 +1,4 @@
-import { AuthenticateOptions } from "../types/CreateAuthOptions.js";
+import { AuthenticateOptions } from "../types/AuthenticateOptions.js";
 
 export function isValidAuth(authOptions: AuthenticateOptions) {
   const hasAmbiguousCredentials =

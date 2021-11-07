@@ -8,42 +8,107 @@ import { readFile, writeFile } from "fs/promises";
 import { BumpAction } from "../../types/BumpAction.js";
 import { WebApi } from "xrm-webapi-node/dist/types/WebApi";
 import { git } from "../../util/git.js";
+import { Credentials } from "xrm-webapi-node/dist/types/Credentials.js";
+import { unpackSolution, unpackSolutionCommandConfig } from "./unpack.js";
+import { CommandConfig } from "../../types/CommandConfig.js";
+import { transformCommandConfigOptions } from "../../util/transformCommandConfigOptions.js";
 
 const versionRegex = /<Version>([^<]*)<\/Version>/g;
 
-export async function bumpSolutionVersion(options: BumpVersionOptions) {
-  const { applicationId, folder, clientSecret, tenantId, url } = options;
-  const action =
-    options.action === "auto" ? await getAction(folder) : options.action;
-  if (action === "skip") {
-    return options;
+export async function bumpSolutionVersion(
+  options: BumpVersionOptions
+): Promise<boolean> {
+  let folder: string | undefined;
+  let didUnpack: boolean;
+  if (
+    ("skipUnpack" in options && options.skipUnpack) ||
+    !("name" in options || "zipFile" in options)
+  ) {
+    didUnpack = false;
+    if ("folder" in options) {
+      folder = options.folder;
+    } else {
+      folder = undefined;
+    }
+  } else {
+    folder = await unpackSolution(options);
+    didUnpack = true;
   }
 
-  const { webApi } = getApi(url!, {
-    clientId: applicationId!,
-    clientSecret: clientSecret!,
-    tenantId: tenantId!,
-  });
+  const action =
+    options.action === undefined || options.action === "auto"
+      ? folder && didUnpack
+        ? await getAction(folder)
+        : "revision"
+      : options.action;
+  if (action === "skip") {
+    return false;
+  }
 
-  const solutionXml = await getSolutionXml(folder);
-  const currentVersion = getCurrentVersion(solutionXml);
-  const nextVersion = getNextVersion(currentVersion, action);
-  const updatedSolutionXml = setSolutionXmlVersion(solutionXml, nextVersion);
-  await Promise.all([
-    saveSolutionXml(options.folder, updatedSolutionXml),
-    updateSolutionVersion(webApi, options.name, nextVersion),
-  ]);
+  const promises: Promise<void>[] = [];
+  let nextVersion: string | undefined = undefined;
 
-  return options;
+  if (folder) {
+    const solutionXml = await getSolutionXml(folder);
+    const currentVersion = getCurrentVersion(solutionXml);
+    nextVersion = getNextVersion(currentVersion, action);
+    const updatedSolutionXml = setSolutionXmlVersion(solutionXml, nextVersion);
+    promises.push(saveSolutionXml(folder, updatedSolutionXml));
+  }
+
+  if ("name" in options && options.name !== undefined) {
+    const {
+      applicationId,
+      clientSecret,
+      name,
+      password,
+      tenantId,
+      url,
+      username,
+    } = options;
+    const { webApi } = getApi(url!, {
+      clientId: applicationId,
+      clientSecret,
+      password,
+      tenantId,
+      username,
+    } as Credentials);
+    if (nextVersion === undefined) {
+      promises.push(
+        (async () => {
+          const currentVersion = await getCurrentVersion(webApi, name);
+          const nextVersion = getNextVersion(currentVersion, action);
+          await updateSolutionVersion(webApi, name, nextVersion);
+        })()
+      );
+    } else {
+      promises.push(updateSolutionVersion(webApi, name, nextVersion));
+    }
+  }
+
+  await Promise.all(promises);
+
+  return true;
 }
 
-function getCurrentVersion(xml: string) {
-  const match = versionRegex.exec(xml);
-  if (!match) {
-    throw new Error("Could not find Version tag in Solution.xml");
+function getCurrentVersion(xml: string): string;
+function getCurrentVersion(webApi: WebApi, name: string): Promise<string>;
+function getCurrentVersion(arg0: string | WebApi, name?: string) {
+  if (typeof arg0 === "string") {
+    const xml = arg0;
+    const match = versionRegex.exec(xml);
+    if (!match) {
+      throw new Error("Could not find Version tag in Solution.xml");
+    }
+    const version = match[1];
+    return version;
+  } else {
+    const webApi = arg0;
+    return (async () => {
+      const solution = await getSolution(webApi, name!);
+      return solution.version!;
+    })();
   }
-  const version = match[1];
-  return version;
 }
 
 const versionNumberIndexMap: { [key in BumpAction]: number } = {
@@ -90,6 +155,13 @@ async function updateSolutionVersion(
   name: string,
   version: string
 ) {
+  const solution = await getSolution(webApi, name);
+  await webApi.updateRecord<Solution>("solution", solution.solutionid!, {
+    version,
+  });
+}
+
+async function getSolution(webApi: WebApi, name: string) {
   const results = await webApi.retrieveMultipleRecords<Solution>(
     "solution",
     buildQuery<Solution>({
@@ -99,16 +171,54 @@ async function updateSolutionVersion(
     })
   );
   const solution = results.entities[0];
-  await webApi.updateRecord<Solution>("solution", solution.solutionid!, {
-    version,
-  });
+  return solution;
 }
 
 async function getAction(folder: string) {
-  const diffOutput = await git("diff", "--numstat", folder);
-  if (diffOutput.trim().length === 0) {
+  const outputs = await Promise.all([
+    git("diff", "--numstat", folder),
+    git("ls-files", "--others", folder),
+  ]);
+  if (outputs.every((output) => output.trim().length === 0)) {
     return "skip";
   } else {
     return "revision";
   }
 }
+
+export const bumpSolutionVersionCommandConfig: CommandConfig<
+  BumpVersionOptions,
+  boolean
+> = {
+  name: "bumpVersion",
+  action: bumpSolutionVersion,
+  description:
+    "Increases the version number of a solution in source control and in a target environment.",
+  options: [
+    ...transformCommandConfigOptions(unpackSolutionCommandConfig.options, {
+      edits: {
+        name: {
+          description: "The name of the solution to version-bump",
+          required: false,
+        },
+      },
+    }),
+    {
+      name: "action",
+      abbreviation: "ac",
+      description:
+        "Determines which digit of the version to update. " +
+        "Options are auto, major, minor, build, and revision. " +
+        '"auto" will auto-detect whether or not to bump the version based whether any changes were detected after unpacking, ' +
+        'or if --skipUnpack is set, "auto" will default to "revision". ' +
+        "default: auto.",
+    },
+    {
+      name: "skipUnpack",
+      abbreviation: "su",
+      description:
+        "Skips exporting / unpacking the solution prior to bumping its version.",
+      type: "flag",
+    },
+  ],
+};

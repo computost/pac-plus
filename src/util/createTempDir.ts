@@ -1,3 +1,4 @@
+import { existsSync } from "fs";
 import { mkdir, rm } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -17,6 +18,9 @@ export async function createTempDir() {
 function getTempContainer() {
   const packagePath = getPackagePath();
   const tempContainerPath = join(packagePath, "temp");
+  if (!existsSync(tempContainerPath)) {
+    addCleanupAction(() => rm(tempContainerPath, { recursive: true }));
+  }
   return tempContainerPath;
 }
 

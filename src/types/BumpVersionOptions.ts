@@ -1,8 +1,11 @@
 import { BumpAction } from "./BumpAction.js";
-import { AuthenticateOptions } from "./CreateAuthOptions.js";
+import { AuthenticateOptions } from "./AuthenticateOptions.js";
+import { UnpackOptions } from "./UnpackOptions.js";
 
-export type BumpVersionOptions = AuthenticateOptions & {
-  action: "auto" | BumpAction;
-  folder: string;
-  name: string;
-};
+export type BumpVersionOptions = {
+  action?: "auto" | BumpAction;
+  skipUnpack?: boolean;
+} & (
+  | (UnpackOptions | { folder: string })
+  | (AuthenticateOptions & { name: string })
+);
